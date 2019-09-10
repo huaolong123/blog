@@ -20,4 +20,8 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('ceshi/', views.ceshi),
+    path('about/', views.about),
+    path('index/', views.index),
+    path('listpic/', views.listpic),
+    path('newslistpic/', views.newslistpic),
 ]
