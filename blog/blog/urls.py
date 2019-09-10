@@ -24,4 +24,5 @@ urlpatterns = [
     path('index/', views.index),
     path('listpic/', views.listpic),
     path('newslistpic/', views.newslistpic),
+    path('base/', views.base),
 ]
