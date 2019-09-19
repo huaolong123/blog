@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <script src="/static/js/jquery-1.8.3.min.js"></script>
+</head>
+<body>
+<form action="" method="post">
+    {% csrf_token %}
+    用户名: <input type="text" id="username" name="username"><br>
+    密码: <input type="password" name="password" id="password"><br>
+    <input type="button" value="登录" id="check_value">
+</form>
+<p id="text"></p>
+<script>
+    $("#check_value").click(function () {
+        username = $("#username").val();
+        password = $("#password").val();
+        send_data = {
+            'username':username,
+            'password':password,
+            'csrfmiddlewaretoken':'{{ csrf_token }}'
+        };
+        url = '/ajaxpost_demo_data/';
+        $.ajax({
+            url:url,
+            type:'post',
+            data:send_data,
+            success:function (data) {
+                $('#text').text(data.content)
+            },
+            error:function (error) {
+                $('#text').text(error)
+            }
+        })
+    })
+</script>
+</body>
+</html>

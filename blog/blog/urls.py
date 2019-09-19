@@ -14,8 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from . import views
+from django.urls import re_path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,5 +25,29 @@ urlpatterns = [
     path('index/', views.index),
     path('listpic/', views.listpic),
     path('newslistpic/', views.newslistpic),
+    re_path('newslistpic/(\d+)', views.newslistpic),
     path('base/', views.base),
+    path('addarticle/', views.addarticle),
+    path('fytest/', views.fytest),
+    path('reqtest/', views.reqtest),
+    path('formtest/', views.formtest),
+    path('register/', views.register),
+    path('csrfdemo/', views.csrfdemo),
+    path('login/', views.login),
+    path('ajaxget/', views.ajaxget),
+    path('ajaxget_data/', views.ajaxget_data),
+    path('checkusername/', views.checkusername),
+    path('nameblur/', views.nameblur),
+    path('ajaxget_demo/', views.ajaxget_demo),
+    path('ajaxget_demo_data/', views.ajaxget_demo_data),
+    path('ajaxpost_demo/', views.ajaxpost_demo),
+    path('ajaxpost_demo_data/', views.ajaxpost_demo_data),
+    path('login_demo/', views.login_demo),
+    path('logout/', views.logout),
+    path('ajaxget_blur/', views.ajaxget_blur),
+    path('ajaxpost/', views.ajaxpost),
+    path('ajaxpost_data/', views.ajaxpost_data),
+    path('blog',include('blogapp.urls')),
+    re_path('neirong/(?P<id>\d+)',views.neirong),
+    path('ckeditor/',include('ckeditor_uploader.urls'))
 ]

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <style>
+        div{
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: url("/static/images/bj.jpg");
+        }
+    </style>
+</head>
+<body>
+<div>
+<h1 style="color: deeppink;font-size: 50px">Welcome</h1>
+<h2 style="color: springgreen">欢迎来到注册页面</h2>
+{#<form action="" method="post">#}
+{#    {% csrf_token %}#}
+{#    用户名&nbsp;&nbsp;&nbsp;: <input type="text" name="username"><br>#}
+{#    密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码: <input type="password" name="password"><br>#}
+{#    确认密码: <input type="password" name="password2"><br>#}
+{#    <input type="submit" value="提交">#}
+{#</form>#}
+{#    {{ register_form.as_p }}#}
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for foo in register_form %}
+            {{ foo.label }}
+            {{ foo }}
+            <br>
+        {% endfor %}
+        <br>
+        <input type="submit" value="注册">
+        <b style="color: cyan">注册好了？赶紧去登录吧>></b>
+        <button><a href="/login">登录</a></button>
+    </form>
+    {#    {{ content }}#}
+    <br>
+    {{ error }}
+</div>
+</body>
+</html>
