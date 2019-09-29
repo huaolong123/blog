@@ -1,16 +1,26 @@
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from django.shortcuts import render
 from blogapp.models import *
 from django.core.paginator import Paginator
 
-def loginValid(fun):
+# 定义一个检查cookie和session的装饰器
+def LoginVaild(func):
     def inner(request,*args,**kwargs):
         username = request.COOKIES.get('username')
-        if username:
-            return fun(request,*args,**kwargs)
+        session_name = request.session.get('username')
+        if username and session_name and username==session_name:
+            return func(request,*args,**kwargs)
         else:
-            return HttpResponseRedirect('/login')
+            return HttpResponseRedirect('/saller/login/')
     return inner
+
+#  md5加密
+import hashlib
+def setPassword(password):
+    md5 = hashlib.md5()
+    md5.update(password.encode())
+    result = md5.hexdigest()
+    return result
 
 def ceshi(request):
     return HttpResponse('hello')
@@ -18,7 +28,6 @@ def ceshi(request):
 def about(request):
     return render(request,'about.html')
 
-@loginValid
 def index(request):
     # username = request.COOKIES.get('name')
     # if username:
@@ -121,87 +130,7 @@ def csrfdemo(request):
 
     return render(request,'csrfdemo.html',locals())
 
-#  md5加密
-import hashlib
-def setPassword(password):
-    md5 = hashlib.md5()
-    md5.update(password.encode())
-    result = md5.hexdigest()
-    return result
 
-from blogapp.forms import Register
-def register(request):
-    register_form = Register()
-    # if request.method == 'POST':
-    #     username = request.POST.get('username')
-    #     password = request.POST.get('password')
-    #     password2 = request.POST.get('password2')
-    #     if password != password2:
-    #         print('两次密码不一样')
-    #         pass
-    #     else:
-    #         user = User()
-    #         user.name = username
-    #         user.password = setPassword(password)
-    #         user.save()
-    # 前端验证
-    # if request.method == 'POST':
-    #     username = request.POST.get('name')
-    #     password = request.POST.get('password')
-    #     content = '参数不全'
-    #     if username and password:
-    #         user = User()
-    #         user.name = username
-    #         user.password = setPassword(password)
-    #         user.save()
-    #         content = '添加成功'
-
-    # 后端验证
-    error = ''
-    #  !!!固定写法
-    if request.method == 'POST':
-        data = Register(request.POST)  #将POST传来的请求进行校验
-        if data.is_valid():  #判断校验是否为True
-            clean_data = data.cleaned_data  #返回一个字典类型
-            username = clean_data.get('name')
-            password = clean_data.get('password')
-            # user = User()
-            # user.name = username
-            # user.password = setPassword(password)
-            # user.save()
-            # error = '添加成功'
-            user = User.objects.filter(name=username).first()
-            if user:
-                error = '用户名已存在，换一个吧!'
-            else:
-                user.name = username
-                username = setPassword(password)
-                user.save()
-                error = '注册成功'
-        else:
-            error = data.errors
-            print(error)
-
-    return render(request,'register.html',locals())
-
-from django.http import HttpResponseRedirect
-def login(request):
-    error = ''
-    if request.method == 'POST':
-        data = request.POST
-        username = data.get('username')
-        passwordold = data.get('password')
-        password = setPassword(passwordold)
-        print(username)
-        if User.objects.filter(name=username,password=password).first() is None:
-            error = '用户名或密码错误'
-        else:
-            response = HttpResponseRedirect('/index/')
-            response.set_cookie('username',username)
-            request.session['username']=username
-            return response
-
-    return render(request,'login.html',locals())
 
 def ajaxget(request):
     return render(request,'ajaxget.html')
@@ -337,3 +266,54 @@ def logout(request):
     del request.session['username']
     # request.session.flush()  #  删除所有的session
     return response
+
+
+
+# 注册页面
+def register(request):
+    content = ''
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+        if email:
+            emailname = LoginUser.objects.filter(email=email).first()
+            if emailname:
+                content = '用户名已存在,换一个吧~'
+            else:
+                if password==password2:
+                    loginuser = LoginUser()
+                    loginuser.email = email
+                    loginuser.password = setPassword(password)
+                    loginuser.username = email
+                    loginuser.save()
+                    content = '注册成功!'
+                else:
+                    content = '两次密码不一样!'
+        else:
+            content = '邮箱不能为空!'
+    return render(request,'register.html',locals())
+
+# 登录页面
+def login(request):
+    content = ''
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        if email:
+            loginuser = LoginUser.objects.filter(email=email).first()
+            if loginuser:
+                if loginuser.password == setPassword(password):
+                    response = HttpResponseRedirect('/index/')
+                    response.set_cookie('username',loginuser.username)
+                    request.session['username']=loginuser.username
+                    response.set_cookie('userid',loginuser.id)
+                    return response
+                else:
+                    content = '密码错误!'
+            else:
+                content = '邮箱不存在!'
+        else:
+            content = '邮箱不能为空!'
+
+    return render(request,'login.html',locals())

@@ -47,7 +47,6 @@ urlpatterns = [
     path('ajaxget_blur/', views.ajaxget_blur),
     path('ajaxpost/', views.ajaxpost),
     path('ajaxpost_data/', views.ajaxpost_data),
-    path('blog',include('blogapp.urls')),
     re_path('neirong/(?P<id>\d+)',views.neirong),
     path('ckeditor/',include('ckeditor_uploader.urls'))
 ]
