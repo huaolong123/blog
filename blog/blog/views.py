@@ -11,7 +11,7 @@ def LoginVaild(func):
         if username and session_name and username==session_name:
             return func(request,*args,**kwargs)
         else:
-            return HttpResponseRedirect('/saller/login/')
+            return HttpResponseRedirect('/login/')
     return inner
 
 #  md5加密
@@ -25,6 +25,7 @@ def setPassword(password):
 def ceshi(request):
     return HttpResponse('hello')
 
+@LoginVaild
 def about(request):
     return render(request,'about.html')
 
@@ -38,9 +39,11 @@ def index(request):
     # else:
     #     return HttpResponseRedirect('/login/')
 
+@LoginVaild
 def listpic(request):
     return render(request,'listpic.html')
 
+@LoginVaild
 def newslistpic(request,page=1):
     acticle = Article.objects.order_by('-data')
     paginator = Paginator(acticle,6)
@@ -261,12 +264,12 @@ def login_demo(request):
     return render(request,'login_demo.html',locals())
 
 def logout(request):
-    response = HttpResponseRedirect('/index/')
+    response = HttpResponseRedirect('/login/')
     response.delete_cookie('username')
+    response.delete_cookie('userid')
     del request.session['username']
     # request.session.flush()  #  删除所有的session
     return response
-
 
 
 # 注册页面
@@ -317,3 +320,33 @@ def login(request):
             content = '邮箱不能为空!'
 
     return render(request,'login.html',locals())
+
+@LoginVaild
+def myblog(request):
+    error = ''
+    email = request.COOKIES.get('username')
+    author = Author.objects.filter(email=email).first()
+    if author :
+        article = author.article_set.all()
+    else:
+        error = '您还没有文章呢~'
+    return render(request,'myblog.html',locals())
+
+@LoginVaild
+def addblog(request):
+    data = Type.objects.all().values('name')
+    type = []
+    for i in data:
+        type.append(i['name'])
+    if request.method == 'POST':
+        data = request.POST
+        ar_type = data.get('type')
+        type_obj = Type.objects.filter(name=ar_type).first()
+        article = Article()
+        article.title = data.get('title')
+        article.content = data.get('content')
+        article.description = data.get('description')
+        article.type = type_obj
+        article.picture = request.FILES.get('img')
+        article.save()
+    return render(request,'addblog.html',locals())

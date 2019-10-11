@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="con_content">
+            <div class="about_box">
+                <h2 class="nh1"><span>您现在的位置是：<a href="/" target="_blank">网站首页</a>>><a href="#" target="_blank">我的文章</a></span><b>我的文章</b>&nbsp;&nbsp;&nbsp;<a
+                        href="/addblog/" style="font-weight: bold;color: #006699">添加文章</a>
+                </h2>
+                <div class="dtxw box">
+                <p style="font-size: 30px;color: #2e59d9;font-weight: bold;text-align: center">{{ error }}</p>
+                    {% for foo in article %}
+                        <li>
+                            <div class="dttext f_l">
+                                <ul>
+                                    <h2><a href="neirong/{{ foo.id }}/">{{ foo.title }}</a></h2>
+                                    <p>{{ foo.description |safe }}</p>
+                                    <span>{{ foo.data }}</span>
+                                </ul>
+                            </div>
+                            <div class="xwpic f_r"><a href="/"><img src="/static/{{ foo.picture }}"></a></div>
+                        </li>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="blank"></div>
+    <!-- container代码 结束 -->
+{% endblock %}

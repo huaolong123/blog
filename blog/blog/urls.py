@@ -48,5 +48,8 @@ urlpatterns = [
     path('ajaxpost/', views.ajaxpost),
     path('ajaxpost_data/', views.ajaxpost_data),
     re_path('neirong/(?P<id>\d+)',views.neirong),
+    path('myblog/',views.myblog),
+    path('addblog/',views.addblog),
+    re_path('^$',views.index),
     path('ckeditor/',include('ckeditor_uploader.urls'))
 ]
